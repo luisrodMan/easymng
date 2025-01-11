@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 
 import com.ngeneration.furthergui.FComponent;
+import com.nxtr.easymng.Application;
+import com.nxtr.easymng.PropertyParser;
 import com.nxtr.easymng.View;
 import com.nxtr.easymng.ViewResolverManager;
 
@@ -16,6 +18,13 @@ public class DefaultViewManager implements ViewManager {
 
 	private Map<String, View> views = new HashMap<>();
 	private List<String> viewsOrder = new LinkedList<>();
+	private List<ViewManagerListener> listeners = new LinkedList<>();
+	private View focusedView;
+	private Application application;
+
+	public DefaultViewManager(Application application) {
+		this.application = application;
+	}
 
 	private void updateViewsOrder() {
 		View view = getActiveView();
@@ -110,6 +119,44 @@ public class DefaultViewManager implements ViewManager {
 
 	public FComponent getComponent() {
 		return mainSplit;
+	}
+
+	@Override
+	public List<View> getActiveViews() {
+		return mainSplit.getActiveViews();
+	}
+
+	@Override
+	public Application getApplication() {
+		return application;
+	}
+
+	@Override
+	public void addViewManagerListener(ViewManagerListener viewManagerListener) {
+		listeners.add(viewManagerListener);
+	}
+
+	@Override
+	public void removeViewManagerListener(ViewManagerListener viewManagerListener) {
+		listeners.remove(viewManagerListener);
+	}
+
+	@Override
+	public View getFocusedView() {
+		return focusedView;
+	}
+
+	@Override
+	public void save(Map<String, Object> props) {
+		Map<String, Object> p = new HashMap<>();
+		mainSplit.save(p);
+		props.put("views", p);
+	}
+
+	@Override
+	public void restore(Map<String, Object> map) {
+		if (map != null)
+			mainSplit.restore(this, map.getProperties("views"));
 	}
 
 }

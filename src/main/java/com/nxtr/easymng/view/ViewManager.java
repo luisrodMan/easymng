@@ -1,14 +1,22 @@
 package com.nxtr.easymng.view;
 
 import java.util.List;
+import java.util.Map;
 
+import com.nxtr.easymng.Application;
 import com.nxtr.easymng.View;
 import com.nxtr.easymng.ViewResolverManager;
 import com.nxtr.easymng.workspace.IWorkspaceItem;
 
 public interface ViewManager {
 
+	Application getApplication();
+
 	ViewResolverManager getViewResolverManager();
+
+	void addViewManagerListener(ViewManagerListener viewManagerListener);
+
+	void removeViewManagerListener(ViewManagerListener viewManagerListener);
 
 	default void addViewAndSetActive(View view) {
 		addView(view);
@@ -29,13 +37,17 @@ public interface ViewManager {
 
 	void addView(View view, ViewDescriptor descriptor);
 
-	void closeView(String viewId);
-
-	View getActiveView();
-
 	View getViewById(String id);
 
 	List<View> getViews();
+
+	View getActiveView();
+
+	List<View> getActiveViews();
+
+	View getFocusedView();
+
+	void closeView(String viewId);
 
 	boolean setActiveView(String viewId);
 
@@ -43,6 +55,8 @@ public interface ViewManager {
 		return getViewById(view) != null;
 	}
 
-	List<View> getActiveViews();
+	void save(Map<String, Object> props);
+
+	void restore(Map<String, Object> props);
 
 }

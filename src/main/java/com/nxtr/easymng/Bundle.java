@@ -5,13 +5,13 @@ import java.util.Map;
 
 public class Bundle extends MapPropertyParser {
 
-	private Application application;
+	private volatile Application application;
 
 	public Bundle(Application application) {
 		this(application, new HashMap<>());
 	}
 
-	public Bundle(Application application, Map<String, String> map) {
+	public Bundle(Application application, Map<String, Object> map) {
 		super(map);
 		this.application = application;
 	}

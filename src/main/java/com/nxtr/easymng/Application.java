@@ -1,12 +1,13 @@
 package com.nxtr.easymng;
 
+import java.util.List;
 import java.util.Map;
 
 import com.ngeneration.furthergui.FComponent;
 import com.ngeneration.furthergui.event.Action;
 import com.nxtr.easymng.view.ViewManager;
 import com.nxtr.easymng.workspace.IWorkspace;
-import com.nxtr.easymng.workspace.WorkspaceInfo;
+import com.nxtr.easymng.workspace2.Workspace;
 
 public interface Application {
 
@@ -22,13 +23,17 @@ public interface Application {
 		return applicationHolder.application;
 	}
 
+	List<String> getRecentWorspaces();
+
+	PropertyParser getConfiguration();
+
 	void addApplicationListener(ApplicationListener listener);
 
 	void removeApplicationListener(ApplicationListener listener);
 
-	void setActiveWorkspace(WorkspaceInfo info);
+	void setWorkspace(Workspace workspace);
 
-	IWorkspace getWorkspace();
+	Workspace getWorkspace();
 
 	Object getProperty(String property);
 

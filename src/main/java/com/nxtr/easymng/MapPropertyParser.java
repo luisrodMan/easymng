@@ -1,17 +1,22 @@
 package com.nxtr.easymng;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class MapPropertyParser extends PropertyParser {
 
-	private Map<String, String> map;
+	private Map<String, Object> map;
 
-	public MapPropertyParser(Map<String, String> map) {
+	public MapPropertyParser(Map<String, Object> map) {
 		this.map = map;
 	}
 
+	public MapPropertyParser() {
+		this(new HashMap<>());
+	}
+
 	@Override
-	public Map<String, String> getProperties() {
+	public Map<String, Object> getProperties() {
 		return map;
 	}
 
@@ -27,7 +32,8 @@ public class MapPropertyParser extends PropertyParser {
 
 	@Override
 	public String getString(String name) {
-		return map.get(name);
+		var data = map.get(name);
+		return data == null ? null : data.toString();
 	}
 
 }

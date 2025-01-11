@@ -1,11 +1,21 @@
 package com.nxtr.easymng.view;
 
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
+import com.google.gson.Gson;
 import com.ngeneration.furthergui.FComponent;
 import com.ngeneration.furthergui.graphics.Color;
 import com.ngeneration.furthergui.graphics.Graphics;
 import com.ngeneration.furthergui.layout.Layout;
 import com.ngeneration.furthergui.math.Dimension;
 import com.ngeneration.miengine.math.MathUtils;
+import com.nxtr.easymng.Application;
+import com.nxtr.easymng.Bundle;
+import com.nxtr.easymng.MapPropertyParser;
+import com.nxtr.easymng.PropertyParser;
 import com.nxtr.easymng.View;
 
 class ViewSplit extends FComponent {
@@ -140,6 +150,26 @@ class ViewSplit extends FComponent {
 
 	}
 
+	public List<View> getActiveViews() {
+		List<View> list = new LinkedList<>();
+		collectActiveViews(list);
+		return list;
+	}
+
+	private void collectActiveViews(List<View> list) {
+		if (left != null)
+			left.collectActiveViews(list);
+		if (right != null)
+			right.collectActiveViews(list);
+		if (center instanceof ViewSplit)
+			((ViewSplit) center).collectActiveViews(list);
+		else if (center instanceof DefaultViewContainer) {
+			View view = ((DefaultViewContainer) center).getActiveView();
+			if (view != null)
+				list.add(view);
+		}
+	}
+
 	private class InternalLayout implements Layout {
 
 		private int pivot1 = -1;
@@ -244,6 +274,57 @@ class ViewSplit extends FComponent {
 
 		}
 
+	}
+
+	public void save(Map<String, Object> props) {
+		List<Map<String, Object>> viewsProperties = new LinkedList<>();
+		save("", viewsProperties);
+		// save split state???
+		props.put("views", viewsProperties);
+	}
+
+	private void save(String path, List<Map<String, Object>> viewsProperties) {
+		if (left != null)
+			left.save(path + (orientation == HORIZONTAL ? "L" : "T"), viewsProperties);
+		if (right != null)
+			right.save(path + (orientation == HORIZONTAL ? "R" : "B"), viewsProperties);
+		if (center != null) {
+			if (center instanceof DefaultViewContainer) {
+				final List<Map<String, Object>> views = new LinkedList<>();
+				((DefaultViewContainer) center).getViews().forEach(view -> {
+					var properties = new Bundle(Application.getInstance());
+					view.save(properties);
+					var viewState = new HashMap<String, Object>();
+					viewState.put("class", view.getClass().getCanonicalName());
+					viewState.put("state", properties.getProperties());
+					views.add(viewState);
+				});
+				var bundle = new HashMap<String, Object>();
+				bundle.put("path", path);
+				bundle.put("views", views);
+				if (!views.isEmpty())
+					viewsProperties.add(bundle);
+			} else {
+				((ViewSplit) center).save(path + "C", viewsProperties);
+			}
+		}
+	}
+
+	public void restore(DefaultViewManager viewMng, PropertyParser props) {
+		props.getPropertiesList("views").forEach(data -> {
+			String path = data.getString("path");
+			data.getPropertiesList("views").forEach(viewData -> {
+				String clzz = viewData.getString("class");
+				try {
+					View view = (View) Class.forName(clzz).newInstance();
+					viewMng.addView(view, new DefaultViewDescriptor(path));
+					view.restore(
+							new Bundle(Application.getInstance(), viewData.getProperties("state").getProperties()));
+				} catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
+					e.printStackTrace();
+				}
+			});
+		});
 	}
 
 }

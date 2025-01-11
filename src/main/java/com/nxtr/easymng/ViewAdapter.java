@@ -5,13 +5,15 @@ import java.util.UUID;
 public abstract class ViewAdapter implements View {
 
 	private String id;
+	private String title;
 
-	public ViewAdapter() {
-		this(UUID.randomUUID().toString());
+	public ViewAdapter(String title) {
+		this(UUID.randomUUID().toString(), title);
 	}
 
-	public ViewAdapter(String id) {
+	public ViewAdapter(String id, String title) {
 		this.id = id;
+		setTitle(title);
 	}
 
 	@Override
@@ -20,9 +22,17 @@ public abstract class ViewAdapter implements View {
 	}
 
 	@Override
-	public void restore(Bundle bundle) {
-		// TODO Auto-generated method stub
+	public String getTitle() {
+		return title;
+	}
 
+	@Override
+	public void restore(Bundle bundle) {
+		setTitle(bundle.getString("viewTitle"));
+	}
+
+	protected void setTitle(String string) {
+		this.title = string;
 	}
 
 	@Override
@@ -32,8 +42,7 @@ public abstract class ViewAdapter implements View {
 
 	@Override
 	public void save(Bundle bundle) {
-		// TODO Auto-generated method stub
-
+		bundle.put("viewTitle", getTitle());
 	}
 
 }

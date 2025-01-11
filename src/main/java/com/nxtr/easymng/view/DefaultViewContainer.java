@@ -26,7 +26,7 @@ public class DefaultViewContainer implements ViewContainer {
 	public FComponent getComponent() {
 		return tabs;
 	}
-	
+
 	private int getViewIndex(FTabbedPane tabs2, View view) {
 		for (int i = 0; i < tabs.getTabCount(); i++)
 			if (tabs.getComponentAt(i) == view.getComponent())
@@ -37,6 +37,11 @@ public class DefaultViewContainer implements ViewContainer {
 	@Override
 	public boolean contains(View view) {
 		return views.contains(view);
+	}
+
+	public View getActiveView() {
+		int idx = tabs.getSelectedIndex();
+		return idx < 0 ? null : views.get(idx);
 	}
 
 }

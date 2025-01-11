@@ -18,8 +18,7 @@ import com.nxtr.easymng.ApplicationListener;
 import com.nxtr.easymng.ViewAdapter;
 import com.nxtr.easymng.util.ContextMenuUtil;
 import com.nxtr.easymng.util.ContextMenuUtil.ContextMenuDef;
-import com.nxtr.easymng.workspace.IWorkspace;
-import com.nxtr.easymng.workspace.WorkspaceInfo;
+import com.nxtr.easymng.workspace2.Workspace;
 
 public abstract class ExplorerView extends ViewAdapter {
 
@@ -57,11 +56,12 @@ public abstract class ExplorerView extends ViewAdapter {
 	};
 
 	public ExplorerView(Application application) {
+		super("Explorer");
 
 		application.addApplicationListener(new ApplicationListener() {
 
 			@Override
-			public void onWorkspaceChanged(Application application, WorkspaceInfo oldWorkspace) {
+			public void onWorkspaceChanged(Application application, Workspace old) {
 				setupCurrentWorkspace(application);
 			}
 
@@ -142,7 +142,7 @@ public abstract class ExplorerView extends ViewAdapter {
 		}
 	}
 
-	public abstract ExplorerItemUnit setupWorkspace(IWorkspace iWorkspace);
+	public abstract ExplorerItemUnit setupWorkspace(Workspace iWorkspace);
 
 	@Override
 	public String getTitle() {
